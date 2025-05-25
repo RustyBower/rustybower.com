@@ -1,5 +1,5 @@
 kind: pipeline
-type: docker
+type: kubernetes
 name: default
 
 steps:
@@ -11,6 +11,7 @@ steps:
   - name: docker build and push
     image: plugins/docker
     settings:
+      registry: harbor.rustybower.com
       repo: harbor.rustybower.com/hugo/hugo-site
       tags: latest
       username:
