@@ -3,17 +3,16 @@ type: kubernetes
 name: default
 
 steps:
-  - name: build hugo site
-    image: docker.io/hugomods/hugo:base
-    commands:
-      - hugo
-
   - name: docker build and push
     image: plugins/docker
     settings:
       registry: harbor.rustybower.com
       repo: harbor.rustybower.com/hugo/hugo-site
-      tags: latest
+      tags:
+        - latest
+      dockerfile: Dockerfile
+      build_args:
+        - HUGO_BASEURL=https://www.rustybower.com/
       username:
         from_secret: harbor_username
       password:
