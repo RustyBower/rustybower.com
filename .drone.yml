@@ -4,7 +4,7 @@ name: default
 
 steps:
   - name: build hugo site
-    image: klakegg/hugo:ext-alpine
+    image: docker.io/hugomods/hugo:base
     commands:
       - hugo
 
