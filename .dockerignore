@@ -1,7 +1,0 @@
-.git
-.gitmodules
-node_modules
-*.swp
-*.swo
-public/
-resources/
