@@ -1,8 +1,7 @@
 baseURL = "https://www.rustybower.com/"
 languageCode = "en-us"
 title = "Rusty Bower"
-#theme = "PaperMod" 
-theme = "ananke"
+theme = "PaperMod" 
 
 # Optional but useful
 pagination.pagerSize = 10

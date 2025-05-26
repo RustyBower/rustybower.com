@@ -2,7 +2,17 @@ kind: pipeline
 type: kubernetes
 name: default
 
+clone:
+  depth: 1
+  submodules: true  # Ensures your Hugo theme (as a submodule) is cloned properly
+
 steps:
+  - name: debug ls
+    image: alpine
+    commands:
+      - ls -al themes/
+      - cat .gitmodules || true
+
   - name: docker build and push
     image: plugins/docker
     settings:
