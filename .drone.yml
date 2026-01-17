@@ -35,6 +35,7 @@ steps:
 
   - name: deploy
     image: bitnami/kubectl:latest
+    service_account: drone-runner
     commands:
       - kubectl rollout restart deployment/hugo -n hugo
 
