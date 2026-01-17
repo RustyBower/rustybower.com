@@ -33,6 +33,15 @@ steps:
       password:
         from_secret: harbor_password
 
+  - name: deploy
+    image: bitnami/kubectl:latest
+    commands:
+      - echo "$KUBECONFIG_CONTENT" > /tmp/kubeconfig
+      - kubectl --kubeconfig=/tmp/kubeconfig rollout restart deployment/hugo -n hugo
+    environment:
+      KUBECONFIG_CONTENT:
+        from_secret: rustycloud_kubeconfig
+
   #- name: debug hugo build output
     #image: alpine
     #commands:
