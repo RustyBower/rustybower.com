@@ -36,11 +36,7 @@ steps:
   - name: deploy
     image: bitnami/kubectl:latest
     commands:
-      - echo "$KUBECONFIG_CONTENT" > /tmp/kubeconfig
-      - kubectl --kubeconfig=/tmp/kubeconfig rollout restart deployment/hugo -n hugo
-    environment:
-      KUBECONFIG_CONTENT:
-        from_secret: rustycloud_kubeconfig
+      - kubectl rollout restart deployment/hugo -n hugo
 
   #- name: debug hugo build output
     #image: alpine
