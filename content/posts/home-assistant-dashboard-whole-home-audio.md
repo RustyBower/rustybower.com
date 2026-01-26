@@ -129,18 +129,7 @@ Designing the audio UI was tricky. With 15 zones, a traditional media player car
       group: true
       hide:
         power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_15_2
-      name: Patio
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_25_2
-      name: Deck
-      group: true
-      hide:
-        power_state: false
+    # ... more zones
 
     - type: custom:mushroom-title-card
       title: ""
@@ -151,70 +140,12 @@ Designing the audio UI was tricky. With 15 zones, a traditional media player car
       group: true
       hide:
         power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_35_2
-      name: Master Bathroom
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_33_2
-      name: Loft
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_21_2
-      name: Jessica Office
-      group: true
-      hide:
-        power_state: false
+    # ... more zones
 
     - type: custom:mushroom-title-card
       title: ""
       subtitle: Basement
-    - type: custom:mini-media-player
-      entity: media_player.zone_31_2
-      name: Rusty Office
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_32_2
-      name: Golf Sim
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_22_2
-      name: Garage
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_11_2
-      name: Spa Room
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_12_2
-      name: Exercise Room
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_13_2
-      name: Craft Room
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
-      entity: media_player.zone_14_2
-      name: Workshop
-      group: true
-      hide:
-        power_state: false
+    # ... basement zones
 ```
 
 The key settings:
