@@ -85,46 +85,73 @@ Home Assistant sees each zone as a `media_player` entity with source selection a
 
 ## Audio Dashboard Design
 
-Designing the audio UI was tricky. With 15 zones, a traditional media player card for each would be overwhelming. The solution: [mini-media-player](https://github.com/kalkih/mini-media-player) with `group: true` for a compact layout, organized by floor.
+Designing the audio UI was tricky. With 15 zones, a traditional media player card for each would be overwhelming. The solution is a two-column layout: streaming controls on the left, zone controls on the right.
+
+### Streaming Column
+
+The [maxi-media-player](https://github.com/punxaphil/maxi-media-player) card provides a full-featured player with album art as a blurred background:
 
 ```yaml
-# Whole Home Audio - Grouped by Floor
+- type: custom:maxi-media-player
+  entities:
+    - media_player.spotify
+    - media_player.zone_1
+    - media_player.zone_2
+    # ... all zones
+  sections:
+    - player
+  artworkAsBackgroundBlur: true
+```
+
+This gives you playback controls, track info, and the ability to cast to any zone - all in one card.
+
+### Zone Controls Column
+
+For the individual zones, I use `mushroom-media-player-card` with a horizontal layout. Tap to toggle on/off, volume buttons for quick adjustments:
+
+```yaml
 - type: custom:stack-in-card
   cards:
     - type: custom:mushroom-title-card
       title: Whole Home Audio
-      subtitle: Main Floor
-    - type: custom:mini-media-player
+      subtitle: Upstairs
+    - type: custom:mushroom-media-player-card
       entity: media_player.zone_1
       name: Zone 1
-      group: true
-      hide:
-        power_state: false
-    - type: custom:mini-media-player
+      layout: horizontal
+      volume_controls:
+        - volume_buttons
+        - volume_set
+      media_controls: []
+      collapsible_controls: false
+      tap_action:
+        action: toggle
+    - type: custom:mushroom-media-player-card
       entity: media_player.zone_2
       name: Zone 2
-      group: true
-      hide:
-        power_state: false
+      layout: horizontal
+      volume_controls:
+        - volume_buttons
+        - volume_set
+      media_controls: []
+      collapsible_controls: false
+      tap_action:
+        action: toggle
     # ... more zones
 
     - type: custom:mushroom-title-card
       title: ""
-      subtitle: Upstairs
-    # ... upstairs zones
-
-    - type: custom:mushroom-title-card
-      title: ""
-      subtitle: Basement
-    # ... basement zones
+      subtitle: Main Floor
+    # ... main floor zones
 ```
 
 The key settings:
-- **`group: true`** - Compact single-line layout with inline volume slider
-- **`hide: power_state: false`** - Shows on/off state while keeping the UI minimal
-- **Mushroom title cards** with empty `title` and a `subtitle` create floor section headers without extra spacing
+- **`layout: horizontal`** - Compact single-line layout
+- **`volume_controls: [volume_buttons, volume_set]`** - Both +/- buttons and a slider
+- **`media_controls: []`** - Hide play/pause since we control that from the streaming card
+- **`tap_action: action: toggle`** - Tap the card to turn the zone on/off
 
-This puts all 15 zones in a single scrollable card. Each zone shows its name, power state, and a volume slider - everything you need for quick adjustments.
+This puts all zones in a scrollable card organized by floor, with the streaming player always visible on the left.
 
 ## Scene Integration
 
