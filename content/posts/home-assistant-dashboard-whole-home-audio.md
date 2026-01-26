@@ -62,30 +62,7 @@ The audio system uses a **Xantech DAX66** multi-zone amplifier - a commercial-gr
 
 ### The Zones
 
-The house is wired with in-ceiling speakers in 15 zones:
-
-**Main Floor:**
-- Kitchen
-- Music Room
-- Deck
-- Patio
-
-**Upper Floor:**
-- Master Bedroom
-- Master Bathroom
-- Rusty Office
-- Jessica Office
-- Loft
-
-**Lower Level:**
-- Garage
-- Golf Simulator
-- Spa Room
-- Exercise Room
-- Craft Room
-- Workshop
-
-Plus a dedicated **Theater** with an Anthem AV receiver for serious listening.
+The house is wired with in-ceiling speakers across 15 zones spanning three floors - main living areas, bedrooms/offices upstairs, and utility/recreation spaces in the basement. Plus a dedicated **Theater** with an Anthem AV receiver for serious listening.
 
 ### Integration Approach
 
@@ -118,14 +95,14 @@ Designing the audio UI was tricky. With 15 zones, a traditional media player car
       title: Whole Home Audio
       subtitle: Main Floor
     - type: custom:mini-media-player
-      entity: media_player.zone_24_2
-      name: Kitchen
+      entity: media_player.zone_1
+      name: Zone 1
       group: true
       hide:
         power_state: false
     - type: custom:mini-media-player
-      entity: media_player.zone_23_2
-      name: Music Room
+      entity: media_player.zone_2
+      name: Zone 2
       group: true
       hide:
         power_state: false
@@ -134,13 +111,7 @@ Designing the audio UI was tricky. With 15 zones, a traditional media player car
     - type: custom:mushroom-title-card
       title: ""
       subtitle: Upstairs
-    - type: custom:mini-media-player
-      entity: media_player.zone_34_2
-      name: Master Bedroom
-      group: true
-      hide:
-        power_state: false
-    # ... more zones
+    # ... upstairs zones
 
     - type: custom:mushroom-title-card
       title: ""
@@ -161,7 +132,7 @@ The real power comes from combining audio with other automations:
 
 ### Spa Mode
 
-One tap: dims the patio lights, turns on the spa room audio to a relaxation playlist, adjusts the HVAC.
+One tap: dims the outdoor lights, starts a relaxation playlist in the relevant zone, adjusts the HVAC.
 
 ```yaml
 - type: custom:mushroom-template-card
@@ -181,7 +152,7 @@ Turns off all audio zones, sets overnight temperature setpoints, dims lights to 
 
 ### Party Mode
 
-Syncs kitchen, deck, patio, and music room to the same source at matched volumes.
+Syncs all main floor and outdoor zones to the same source at matched volumes.
 
 ## Theater Integration
 
@@ -202,10 +173,7 @@ The theater lighting also has dedicated scene buttons: Off, Movie (5% seating li
 
 ## Tablet Deployment
 
-Three Fire tablets run [Fully Kiosk Browser](https://www.fully-kiosk.com/) showing the dashboard:
-- **Kitchen** - Most used, controls audio and lights for main floor
-- **Loft** - Upstairs landing, quick access to bedrooms
-- **Charging Station** - Portable tablet that docks when not in use
+Fire tablets run [Fully Kiosk Browser](https://www.fully-kiosk.com/) showing the dashboard at key locations - one on the main floor for everyday use, one upstairs, and a portable tablet that docks at a charging station when not in use.
 
 The Admin page shows tablet connectivity status so I know if one has gone offline.
 
