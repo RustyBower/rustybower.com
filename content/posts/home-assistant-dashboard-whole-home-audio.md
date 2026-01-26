@@ -1,7 +1,7 @@
 ---
 title: "Building a Home Assistant Dashboard with Whole Home Audio Control"
 date: 2026-01-26
-draft: true
+draft: false
 tags: ["home-assistant", "smart-home", "lovelace", "audio", "dashboard", "mushroom"]
 ---
 
@@ -108,50 +108,121 @@ Home Assistant sees each zone as a `media_player` entity with source selection a
 
 ## Audio Dashboard Design
 
-Designing the audio UI was tricky. With 15 zones, a traditional media player card for each would be overwhelming. I tested two approaches:
-
-### Approach A: Chips Only
-
-Compact toggle chips for each zone. Tap to turn on/off, hold for full controls:
+Designing the audio UI was tricky. With 15 zones, a traditional media player card for each would be overwhelming. The solution: [mini-media-player](https://github.com/kalkih/mini-media-player) with `group: true` for a compact layout, organized by floor.
 
 ```yaml
-- type: custom:mushroom-chips-card
-  alignment: center
-  chips:
-    - type: template
+# Whole Home Audio - Grouped by Floor
+- type: custom:stack-in-card
+  cards:
+    - type: custom:mushroom-title-card
+      title: Whole Home Audio
+      subtitle: Main Floor
+    - type: custom:mini-media-player
       entity: media_player.zone_24_2
-      icon: mdi:speaker
-      icon_color: "{{ 'cyan' if not is_state('media_player.zone_24_2', 'off') else 'disabled' }}"
-      content: Kitchen
-      tap_action:
-        action: toggle
-      hold_action:
-        action: more-info
+      name: Kitchen
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_23_2
+      name: Music Room
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_15_2
+      name: Patio
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_25_2
+      name: Deck
+      group: true
+      hide:
+        power_state: false
+
+    - type: custom:mushroom-title-card
+      title: ""
+      subtitle: Upstairs
+    - type: custom:mini-media-player
+      entity: media_player.zone_34_2
+      name: Master Bedroom
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_35_2
+      name: Master Bathroom
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_33_2
+      name: Loft
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_21_2
+      name: Jessica Office
+      group: true
+      hide:
+        power_state: false
+
+    - type: custom:mushroom-title-card
+      title: ""
+      subtitle: Basement
+    - type: custom:mini-media-player
+      entity: media_player.zone_31_2
+      name: Rusty Office
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_32_2
+      name: Golf Sim
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_22_2
+      name: Garage
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_11_2
+      name: Spa Room
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_12_2
+      name: Exercise Room
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_13_2
+      name: Craft Room
+      group: true
+      hide:
+        power_state: false
+    - type: custom:mini-media-player
+      entity: media_player.zone_14_2
+      name: Workshop
+      group: true
+      hide:
+        power_state: false
 ```
 
-**Pros:** Very compact, can see all zones at once
-**Cons:** No volume control without extra tap
+The key settings:
+- **`group: true`** - Compact single-line layout with inline volume slider
+- **`hide: power_state: false`** - Shows on/off state while keeping the UI minimal
+- **Mushroom title cards** with empty `title` and a `subtitle` create floor section headers without extra spacing
 
-### Approach B: Chips + Mini Media Players
-
-Toggle chips above, with mini-media-player cards below for volume:
-
-```yaml
-- type: custom:mini-media-player
-  entity: media_player.zone_24_2
-  name: Kitchen
-  group: true
-  hide:
-    power: true
-    source: true
-    progress: true
-    icon: true
-```
-
-**Pros:** Direct volume control
-**Cons:** Takes more space, limited to showing 4-6 zones
-
-I'm currently running both to see which the family prefers.
+This puts all 15 zones in a single scrollable card. Each zone shows its name, power state, and a volume slider - everything you need for quick adjustments.
 
 ## Scene Integration
 
