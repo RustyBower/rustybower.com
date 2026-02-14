@@ -25,7 +25,7 @@ The download is a single 2.94 GB parquet file with seven columns:
 
 Here's what the first few rows look like — the data is sorted by `TOTAL_PAID` descending, so the biggest line items are at the top:
 
-```
+```text
 ┌──────────────────────────┬────────────────────────────┬────────────┬──────────────────┬────────────────────────────┬──────────────┬──────────────┐
 │ BILLING_PROVIDER_NPI_NUM │ SERVICING_PROVIDER_NPI_NUM │ HCPCS_CODE │ CLAIM_FROM_MONTH │ TOTAL_UNIQUE_BENEFICIARIES │ TOTAL_CLAIMS │  TOTAL_PAID  │
 ├──────────────────────────┼────────────────────────────┼────────────┼──────────────────┼────────────────────────────┼──────────────┼──────────────┤
@@ -84,7 +84,7 @@ The Jupyter kernel OOM-killed immediately on a 16 GB pod.
 
 The math makes it obvious in hindsight. Parquet decompresses to a much larger in-memory representation, and pandas stores each string as a Python object with ~56 bytes of overhead regardless of string length. Three string columns across 227M rows:
 
-```
+```text
 227M rows × 3 string columns × ~56 bytes/object ≈ 38 GB
 + 2 int64 columns × 8 bytes × 227M              ≈  3.6 GB
 + 1 float64 column × 8 bytes × 227M              ≈  1.8 GB
@@ -197,7 +197,7 @@ billing_mill = con.sql(f"""
 
 The distribution tells the story:
 
-```
+```text
 count    617,503
 mean           4.6
 std           33.0
@@ -413,7 +413,7 @@ for npi in top5:
 ### NPI 1700090834 — Score 4/5 ($1.13B)
 **Flags:** cost outlier, billing mill, high volume, spike
 
-```
+```text
 HCPCS_CODE         paid        claims    benes     pct
      H0019  553,957,700   2,884,496   155,197    53.2%
      H0004  188,211,147   1,572,012   505,021    18.1%
@@ -429,7 +429,7 @@ All H-codes (behavioral health). H0019 alone is $554M for day treatment services
 ### NPI 1932341898 — Score 4/5 ($997M)
 **Flags:** cost outlier, high volume, spike, concentrated
 
-```
+```text
 HCPCS_CODE         paid        claims    benes     pct
      H0044  996,688,991     304,663   283,937   100.0%
      T2028      112,131       1,468        36     0.0%
@@ -442,7 +442,7 @@ Monthly spending range: $512,298 — $21,818,712
 ### NPI 1114931391 — Score 4/5 ($382M)
 **Flags:** cost outlier, high volume, spike, concentrated
 
-```
+```text
 HCPCS_CODE         paid        claims    benes     pct
      S3620  370,523,694   1,324,711   974,114    97.1%
      83655    8,882,287     685,614   667,070     2.3%
@@ -458,7 +458,7 @@ Monthly spending range: $47 — $15,497,422
 ### NPI 1629283197 — Score 4/5 ($306M)
 **Flags:** billing mill, high volume, spike, concentrated
 
-```
+```text
 HCPCS_CODE         paid        claims    benes     pct
      T1015  298,897,046     718,309   655,601    99.1%
      99393      722,772      52,037    39,635     0.2%
@@ -474,7 +474,7 @@ Monthly spending range: $594,623 — $5,028,749
 ### NPI 1619341716 — Score 4/5 ($303M)
 **Flags:** cost outlier, billing mill, high volume, spike
 
-```
+```text
 HCPCS_CODE         paid       claims    benes     pct
      99211   45,853,871    488,964   412,175    34.6%
      90832   37,594,923    253,130   125,580    28.4%
