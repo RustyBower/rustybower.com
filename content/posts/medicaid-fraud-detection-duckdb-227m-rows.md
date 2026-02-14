@@ -508,5 +508,3 @@ The full analysis runs as a Jupyter notebook backed by DuckDB on a 16 GB Kuberne
 **The pandas handoff is intentional.** DuckDB returns result sets via `.df()` only after reducing 227M rows to thousands. The composite scoring step — five set-membership lookups and a sum — is trivial in pandas. There's no reason to push that into SQL.
 
 **`GREATEST(x, 1)` prevents division by zero.** Several providers have zero beneficiaries or zero prior-month spending. Rather than filtering them out (and potentially missing interesting cases), I clamp the denominator to 1. This means zero-bene providers get a per-bene cost equal to their total paid — which is correct behavior for flagging purposes.
-
-The dataset is public at [opendata.hhs.gov/datasets/medicaid-provider-spending/](https://opendata.hhs.gov/datasets/medicaid-provider-spending/).
