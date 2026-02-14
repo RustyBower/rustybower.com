@@ -5,6 +5,35 @@ theme = "stack"
 
 pagination.pagerSize = 10
 
+[related]
+  includeNewer = true
+  threshold = 60
+  toLower = false
+  [[related.indices]]
+    name = "tags"
+    weight = 100
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      [markup.goldmark.extensions.passthrough]
+        enable = true
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [["\\[", "\\]"], ["$$", "$$"]]
+          inline = [["\\(", "\\)"]]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.tableOfContents]
+    endLevel = 4
+    ordered = true
+    startLevel = 2
+  [markup.highlight]
+    noClasses = false
+    codeFences = true
+    guessSyntax = true
+    lineNos = false
+    tabWidth = 4
+
 [params]
   author = "Rusty Bower"
   description = "Security engineering, systems, and thoughts."
@@ -16,10 +45,13 @@ pagination.pagerSize = 10
 
   [params.sidebar]
     compact = false
+    avatar = "img/avatar.png"
 
   [params.article]
     toc = true
     readingTime = true
+    [params.article.math]
+      enable = true
 
   [params.colorScheme]
     toggle = true
@@ -27,6 +59,14 @@ pagination.pagerSize = 10
 
   [params.comments]
     enabled = false
+
+  [params.widgets]
+    homepage = [
+      { type = "search" },
+      { type = "archives", params = { limit = 5 } },
+      { type = "tag-cloud", params = { limit = 20 } },
+    ]
+    page = [{ type = "toc" }]
 
 [menu]
   [[menu.main]]
@@ -49,6 +89,19 @@ pagination.pagerSize = 10
     weight = 3
     [menu.main.params]
       icon = "search"
+
+  [[menu.main]]
+    name = "Tags"
+    url = "/tags"
+    weight = 4
+    [menu.main.params]
+      icon = "tag"
+
+  [[menu.social]]
+    name = "GitHub"
+    url = "https://github.com/RustyBower"
+    [menu.social.params]
+      icon = "brand-github"
 
 [outputs]
   home = ["HTML", "RSS"]
