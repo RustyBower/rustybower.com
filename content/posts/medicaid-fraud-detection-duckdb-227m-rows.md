@@ -495,7 +495,6 @@ These are flags, not findings. Several patterns have legitimate explanations:
 - **State-contracted labs** (like the newborn screening provider at NPI `1114931391`) can have legitimate volume and spending spikes tied to contract awards and state program changes.
 - **T1019/T1015/H-codes** are commonly used in home and community-based services (HCBS) and behavioral health, where high volumes per billing entity may reflect program design rather than fraud. States often contract with large managed care entities for these services.
 - **This data is aggregated** — we can't see individual claim details, diagnosis codes, patient demographics, or service locations. Many fraud patterns only become visible at the claim level.
-- **The "active months" field** showing 1 for several providers is a bug in the deep-dive query (it's pulling `COUNT(DISTINCT CLAIM_FROM_MONTH)` within a window function that only sees one row). These providers were active across many months — the composite data shows it.
 
 The real value is in combining signals. A provider that's both a cost outlier *and* has billing mill patterns *and* shows spending spikes is far more suspicious than one that only trips a single wire. The 194 providers at score 4/5 are the ones I'd start investigating.
 
