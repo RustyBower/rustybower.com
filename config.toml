@@ -1,7 +1,7 @@
 baseURL = "https://www.rustybower.com/"
 languageCode = "en-us"
 title = "Rusty Bower"
-theme = "stack"
+theme = "PaperMod"
 
 pagination.pagerSize = 10
 
@@ -39,69 +39,53 @@ pagination.pagerSize = 10
   description = "Security engineering, systems, and thoughts."
   mainSections = ["posts"]
   rssFullContent = true
+  env = "production"
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+  TocOpen = false
+  ShowRssButtonInSectionTermList = true
 
-  [params.footer]
-    since = 2026
+  [params.homeInfoParams]
+    Title = "Rusty Bower"
+    Content = "Security engineering, systems, and thoughts."
 
-  [params.sidebar]
-    compact = false
-    avatar = "img/avatar.png"
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/RustyBower"
 
-  [params.article]
-    toc = true
-    readingTime = true
-    [params.article.math]
-      enable = true
+  [[params.socialIcons]]
+    name = "rss"
+    url = "/index.xml"
 
-  [params.colorScheme]
-    toggle = true
-    default = "auto"
-
-  [params.comments]
-    enabled = false
-
-  [params.widgets]
-    homepage = [
-      { type = "search" },
-      { type = "archives", params = { limit = 5 } },
-      { type = "tag-cloud", params = { limit = 20 } },
-    ]
-    page = [{ type = "toc" }]
+  [params.cover]
+    hiddenInList = false
+    hiddenInSingle = false
 
 [menu]
   [[menu.main]]
     name = "Home"
     url = "/"
     weight = 1
-    [menu.main.params]
-      icon = "home"
 
   [[menu.main]]
     name = "Archives"
     url = "/archives"
     weight = 2
-    [menu.main.params]
-      icon = "archives"
 
   [[menu.main]]
     name = "Search"
     url = "/search"
     weight = 3
-    [menu.main.params]
-      icon = "search"
 
   [[menu.main]]
     name = "Tags"
     url = "/tags"
     weight = 4
-    [menu.main.params]
-      icon = "tag"
-
-  [[menu.social]]
-    name = "GitHub"
-    url = "https://github.com/RustyBower"
-    [menu.social.params]
-      icon = "brand-github"
 
 [outputs]
-  home = ["HTML", "RSS"]
+  home = ["HTML", "RSS", "JSON"]
