@@ -1,0 +1,91 @@
+baseURL = "https://www.rustybower.com/"
+languageCode = "en-us"
+title = "Rusty Bower"
+theme = "PaperMod"
+
+pagination.pagerSize = 10
+
+[related]
+  includeNewer = true
+  threshold = 60
+  toLower = false
+  [[related.indices]]
+    name = "tags"
+    weight = 100
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      [markup.goldmark.extensions.passthrough]
+        enable = true
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [["\\[", "\\]"], ["$$", "$$"]]
+          inline = [["\\(", "\\)"]]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.tableOfContents]
+    endLevel = 4
+    ordered = true
+    startLevel = 2
+  [markup.highlight]
+    noClasses = false
+    codeFences = true
+    guessSyntax = true
+    lineNos = false
+    tabWidth = 4
+
+[params]
+  author = "Rusty Bower"
+  description = "Security engineering, systems, and thoughts."
+  mainSections = ["posts"]
+  rssFullContent = true
+  env = "production"
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+  TocOpen = false
+  ShowRssButtonInSectionTermList = true
+
+  [params.homeInfoParams]
+    Title = "Rusty Bower"
+    Content = "Security engineering, systems, and thoughts."
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/RustyBower"
+
+  [[params.socialIcons]]
+    name = "rss"
+    url = "/index.xml"
+
+  [params.cover]
+    hiddenInList = false
+    hiddenInSingle = false
+
+[menu]
+  [[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+
+  [[menu.main]]
+    name = "Archives"
+    url = "/archives"
+    weight = 2
+
+  [[menu.main]]
+    name = "Search"
+    url = "/search"
+    weight = 3
+
+  [[menu.main]]
+    name = "Tags"
+    url = "/tags"
+    weight = 4
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
