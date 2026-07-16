@@ -126,10 +126,66 @@ Beyond the database fix, I also addressed the pods that were generating the most
 
 **Removed dead state.** A deleted ingress controller's leader lease still had 448K rows — the controller was removed months ago, but the lease key kept accumulating rows from other controllers trying to clean it up.
 
-Going forward, I'll set up a cron job to monitor the kine row count and alert if it exceeds a threshold. The command is simple:
+## Monitoring so it doesn't happen again
+
+I also added Prometheus alerting for the database size. The tricky part: K3s holds the SQLite database open with an exclusive lock during heavy writes, so you can't always query the row count. But you can always `stat` the file.
+
+I enabled the [textfile collector](https://github.com/prometheus/node_exporter#textfile-collector) on node-exporter and wrote a small cron script that runs every 5 minutes:
 
 ```bash
-sudo sqlite3 /var/lib/rancher/k3s/server/db/state.db "SELECT COUNT(*) FROM kine;"
+#!/bin/bash
+# /usr/local/bin/k3s-db-metrics.sh
+OUTPUT=/var/lib/node-exporter/textfile/k3s_kine.prom
+DB=/var/lib/rancher/k3s/server/db/state.db
+
+[ -f "$DB" ] || exit 0
+
+DB_SIZE=$(stat -c %s "$DB" 2>/dev/null || echo 0)
+
+WAL_SIZE=0
+for f in "${DB}-wal" "${DB}-journal"; do
+  [ -f "$f" ] && WAL_SIZE=$(($WAL_SIZE + $(stat -c %s "$f")))
+done
+
+# Row count times out gracefully if the DB is locked
+ROW_COUNT=$(timeout 5 sqlite3 "$DB" "SELECT COUNT(*) FROM kine;" 2>/dev/null)
+ROW_COUNT=${ROW_COUNT:--1}
+
+cat > "${OUTPUT}.tmp" << EOF
+# HELP k3s_kine_total_size_bytes Total size of K3s kine database including WAL/journal
+# TYPE k3s_kine_total_size_bytes gauge
+k3s_kine_total_size_bytes $(($DB_SIZE + $WAL_SIZE))
+# HELP k3s_kine_row_count Number of rows in the kine table (-1 if locked)
+# TYPE k3s_kine_row_count gauge
+k3s_kine_row_count ${ROW_COUNT}
+EOF
+mv "${OUTPUT}.tmp" "$OUTPUT"
 ```
+
+The key insight is that `stat` never blocks on SQLite locks, so the file size metric is always available. The row count uses a 5-second timeout and reports -1 if the database is busy — Prometheus can filter those out.
+
+The alert rules fire on total size (database + WAL/journal combined):
+
+```yaml
+- alert: K3sKineDBSizeLarge
+  expr: k3s_kine_total_size_bytes > 2e+09
+  for: 1h
+  labels:
+    severity: warning
+
+- alert: K3sKineDBSizeCritical
+  expr: k3s_kine_total_size_bytes > 5e+09
+  for: 30m
+  labels:
+    severity: critical
+
+- alert: K3sKineRowCountHigh
+  expr: k3s_kine_row_count > 500000
+  for: 1h
+  labels:
+    severity: warning
+```
+
+2 GB is a generous threshold — my compacted database is 271 MB. If it ever hits 2 GB, something has gone wrong with compaction and I'll get a Pushover notification before it spirals.
 
 If you're running K3s with SQLite (the default for single-node), check your database size. If it's over a few hundred megabytes, you might be on the same path.
