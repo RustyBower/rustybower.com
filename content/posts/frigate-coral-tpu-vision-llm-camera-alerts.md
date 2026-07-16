@@ -21,7 +21,7 @@ Camera (RTSP) → Frigate (Coral TPU) → Vision LLM (Mac Studio) → Notificati
 
 **Stage 1: Camera streams.** Five cameras — doorbell, garage, dog run, and two library-facing cameras — push RTSP streams to Frigate through go2rtc for restreaming. The doorbell is an Amcrest; the others are Dahua. All decode via VAAPI hardware acceleration on the Intel NUC that runs Frigate.
 
-**Stage 2: Object detection on the Coral TPU.** Frigate pulls frames at 4 FPS and runs them through a [Frigate+](https://plus.frigate.video/) custom model on the Coral Edge TPU. The model detects people and packages. A USB Coral on a dedicated node (kube02) handles this — it's fast enough that detection latency is under 50ms per frame.
+**Stage 2: Object detection on the Coral TPU.** Frigate pulls frames at 4 FPS and runs them through a [Frigate+](https://plus.frigate.video/) custom model on the Coral Edge TPU. The model detects people and packages. A USB Coral on a dedicated node (a dedicated node) handles this — it's fast enough that detection latency is under 50ms per frame.
 
 **Stage 3: Vision LLM description.** When Frigate creates a review alert — meaning a tracked object persisted long enough to be interesting — it sends the snapshot to a vision language model. Frigate's built-in GenAI support handles this natively. I'm using `qwen3.5-vl:9b`, a 9-billion parameter vision-language model, served by llama-swap on the Mac Studio.
 
@@ -34,7 +34,7 @@ The Coral TPU is a USB device physically plugged into one specific node. Making 
 First, the node is labeled and tainted so only Frigate can schedule there:
 
 ```yaml
-# Node label + taint on kube02
+# Node label + taint on a dedicated node
 coral-node: "true"
 coral-node=true:NoSchedule
 ```

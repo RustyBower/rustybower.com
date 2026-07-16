@@ -1,6 +1,6 @@
 ---
 title: "Unit-Testing Home Automations That Run in Kubernetes"
-date: 2026-08-11
+date: 2026-07-16
 draft: false
 tags: ["home-assistant", "appdaemon", "python", "kubernetes", "testing", "homelab", "smart-home"]
 ---
@@ -109,39 +109,39 @@ bedroom_shades:
   forecast_high_threshold: 85
   morning_open_enabled: true
 
-# Kids' rooms: close-only (no morning open, no cooling re-open)
-charlie_shades:
+# Guest room: close-only (no morning open, no cooling re-open)
+guest_shades:
   module: bedroom_shades
   class: BedroomShades
   covers:
-    - cover.upstairs_charlie_bedroom_valance
-  thermostat: climate.teddy_bedroom_thermostat
+    - cover.upstairs_guest_bedroom_valance
+  thermostat: climate.guest_bedroom_thermostat
   morning_open_enabled: false
   forecast_high_threshold: 78
 ```
 
-That `morning_open_enabled: false` flag exists because of a bug. The kids' room shades were opening unexpectedly when the AC cycling stopped — the "cooling stopped → re-open" path didn't check whether the shades were supposed to be auto-opened in the first place. The test that caught this:
+That `morning_open_enabled: false` flag exists because of a bug. Some rooms' shades were opening unexpectedly when the AC cycling stopped — the "cooling stopped → re-open" path didn't check whether the shades were supposed to be auto-opened in the first place. The test that caught this:
 
 ```python
 @automation_fixture(
     (BedroomShades, {
-        "covers": ["cover.kid_south"],
-        "thermostat": "climate.kid",
+        "covers": ["cover.guest_south"],
+        "thermostat": "climate.guest",
         "morning_open_enabled": False,
     })
 )
-def kids_shades_app():
+def guest_shades_app():
     pass
 
-def test_no_reopen_when_morning_open_disabled(given_that, kids_shades_app):
+def test_no_reopen_when_morning_open_disabled(given_that, guest_shades_app):
     opens = []
-    kids_shades_app.open_shades = lambda reason: opens.append(reason)
-    kids_shades_app.sun_down = lambda: False
-    kids_shades_app.is_before_reopen_cutoff = lambda: True
-    kids_shades_app.closed_for_cooling = True
+    guest_shades_app.open_shades = lambda reason: opens.append(reason)
+    guest_shades_app.sun_down = lambda: False
+    guest_shades_app.is_before_reopen_cutoff = lambda: True
+    guest_shades_app.closed_for_cooling = True
 
-    kids_shades_app.thermostat_changed(
-        "climate.kid", "hvac_action", "cooling", "idle", {}
+    guest_shades_app.thermostat_changed(
+        "climate.guest", "hvac_action", "cooling", "idle", {}
     )
 
     assert opens == []  # Shades should NOT have opened
@@ -197,7 +197,7 @@ def test_projector_sends_notification_after_6_hours(
     )
 ```
 
-This tests that the projector automation sends an iPhone notification after 6 hours and force-powers-off the projector after 12. Without time travel, you'd have to wait 12 actual hours to verify the behavior.
+This tests that the projector automation sends a push notification after 6 hours and force-powers-off the projector after 12. Without time travel, you'd have to wait 12 actual hours to verify the behavior.
 
 ## The testing payoff
 

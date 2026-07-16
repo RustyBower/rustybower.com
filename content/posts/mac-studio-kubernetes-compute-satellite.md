@@ -40,7 +40,7 @@ subsets:
         name: http
 ```
 
-That's it. Every pod in the cluster can now reach `ollama.ollama.svc.cluster.local:11434` and the traffic routes to the Mac Studio. Add an Ingress in front and it's also available at `ollama.bowerha.us` with TLS termination, external-dns, and Homepage dashboard integration — all the same infrastructure every other service gets.
+That's it. Every pod in the cluster can now reach `ollama.ollama.svc.cluster.local:11434` and the traffic routes to the Mac Studio. Add an Ingress in front and it's also available at `ollama.example.com` with TLS termination, external-dns, and Homepage dashboard integration — all the same infrastructure every other service gets.
 
 The Mac Studio doesn't know or care that Kubernetes exists. It's just listening on a port.
 
@@ -66,9 +66,9 @@ The first three run as Docker Compose on the Mac. The image generation tools run
     <string>com.llama-swap</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/rusty/.local/bin/llama-swap</string>
+        <string>/usr/local/bin/llama-swap</string>
         <string>--config</string>
-        <string>/Users/rusty/.local/share/models/llama-swap.yaml</string>
+        <string>/opt/models/llama-swap.yaml</string>
         <string>--listen</string>
         <string>0.0.0.0:11434</string>
     </array>
@@ -80,7 +80,7 @@ The first three run as Docker Compose on the Mac. The image generation tools run
 </plist>
 ```
 
-Each K8s-side app follows the same three-resource template: a Service (no selector), an Endpoints pointing to `10.0.10.109`, and an Ingress for external access. Adding a new proxied service takes about two minutes.
+Each K8s-side app follows the same three-resource template: a Service (no selector), an Endpoints pointing to the Mac's IP, and an Ingress for external access. Adding a new proxied service takes about two minutes.
 
 ## Keeping the Mac in the GitOps loop
 
