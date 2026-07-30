@@ -226,7 +226,7 @@ BGP installs a route. **A route is not permission.** The firewall rules referenc
 ```
 Allow Pihole DNS   IoT → 172.31.0.254:53
 Allow MQTT         IoT → 172.31.0.9:1883
-Port Forward Plex  WAN → 172.31.0.4:32400
+Port Forward       WAN → <media-server>
 ```
 
 The DNS one was the dangerous one: paired with a `Block External DNS` rule, an IoT device that renewed its lease would have had no resolver *and* no fallback.
