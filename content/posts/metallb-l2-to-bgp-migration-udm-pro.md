@@ -147,7 +147,7 @@ Warning  AllocationFailed  service can not have both
 
 It allocates **nothing**. My Paperless FTP service came up with no address at all because the base set the deprecated field and my overlay added the annotation.
 
-Also worth knowing: the legacy `metallb.universe.tf/loadBalancerIPs` prefix is *still honoured* in v0.16.1. I assumed it was dead, concluded a service was unpinned, and briefly believed I'd created a hazard that didn't exist. Tested it with a throwaway service, and it works fine. Don't write new config with it, but don't panic when you find it.
+Also worth knowing: the legacy `metallb.universe.tf/loadBalancerIPs` prefix is *still honored* in v0.16.1. I assumed it was dead, concluded a service was unpinned, and briefly believed I'd created a hazard that didn't exist. Tested it with a throwaway service, and it works fine. Don't write new config with it, but don't panic when you find it.
 
 ### 4. One Service can't hold two addresses of the same family
 
@@ -219,7 +219,7 @@ That's how I proved nothing was still using an old address before retiring it, a
 
 **Always send a canary query first.** A broken filter and a genuinely idle address produce identical output. If you haven't proven the capture works, silence means nothing. I built that check into the script as a hard failure.
 
-And the mistake, which I made twice: **I verified reachability from one subnet and generalised.** First I declared a whole `/16` unreachable after testing two addresses in it. Later I confirmed the new prefix worked from my workstation and called it done, then found my network has *eight* client VLANs, and the one my workstation sits in has an `Internal → Internal Any/Any` rule while the IoT VLAN is default-deny with explicit allows. My testing had proven nothing about the VLAN that mattered.
+And the mistake, which I made twice: **I verified reachability from one subnet and generalized.** First I declared a whole `/16` unreachable after testing two addresses in it. Later I confirmed the new prefix worked from my workstation and called it done, then found my network has *eight* client VLANs, and the one my workstation sits in has an `Internal → Internal Any/Any` rule while the IoT VLAN is default-deny with explicit allows. My testing had proven nothing about the VLAN that mattered.
 
 BGP installs a route. **A route is not permission.** The firewall rules referenced the old addresses explicitly and all needed updating:
 
