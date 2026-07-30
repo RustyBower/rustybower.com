@@ -1,6 +1,6 @@
 ---
 title: "Fleet-Managing Fire Tablets from Kubernetes"
-date: 2026-08-18
+date: 2026-08-25
 draft: false
 tags: ["kubernetes", "homelab", "smart-home", "home-assistant", "cronjob", "fire-tablet"]
 ---

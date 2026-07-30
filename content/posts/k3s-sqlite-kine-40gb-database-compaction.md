@@ -1,6 +1,6 @@
 ---
 title: "How K3s Silently Grew a 40 GB SQLite Database and Took Down My Cluster"
-date: 2026-08-25
+date: 2026-09-01
 draft: false
 tags: ["kubernetes", "k3s", "sqlite", "homelab", "debugging", "etcd", "kine"]
 ---

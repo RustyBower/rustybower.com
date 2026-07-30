@@ -1,6 +1,6 @@
 ---
 title: "Whole-Home Audio with Music Assistant: Kubernetes Gotchas and a Silent Raspberry Pi"
-date: 2026-08-04
+date: 2026-08-11
 draft: false
 tags: ["music-assistant", "kubernetes", "home-assistant", "homelab", "raspberry-pi", "picoreplayer", "audio", "subsonic"]
 ---
