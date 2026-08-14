@@ -5,11 +5,11 @@ draft: false
 tags: ["python", "fantasy-football", "nfl", "textual", "tui", "statistics", "sleeper", "yahoo"]
 ---
 
-I play in seven fantasy football leagues. Five on Sleeper, two on Yahoo. Six snake drafts and one auction. Team counts of 10 and 12. PPR, half-PPR, and one league that pays a point for every first down. One of them scores individual defensive players. One scores kickers purely on field goal yardage with no penalty for a miss.
+I play in seven fantasy football leagues. Five on Sleeper, two on Yahoo. Six snake drafts and one auction. Team counts of 10 and 12. PPR, half-PPR, and one league that pays a point for every first down. One of them scores individual defensive players. One scores kickers purely on field goal yardage with no penalty for a miss. Five are ordinary redrafts, one is a keeper league, and one is a dynasty league where rosters carry over whole.
 
-Every ranking site gives you one list. That list is built for a league that isn't yours. So I spent a week building a draft assistant that takes each league's actual scoring rules, rescores every player from raw stat projections, computes value over replacement against that league's roster construction, and puts the whole thing in a terminal UI I can drive during a live draft.
+Every ranking site gives you one list. That list is built for a league that isn't yours. So I built a draft assistant that takes each league's actual scoring rules, rescores every player from raw stat projections, computes value over replacement against that league's roster construction, and puts the whole thing in a terminal UI I can drive during a live draft.
 
-8,677 lines of Python across 32 files. Here's what's in it.
+9,200 lines of Python across 33 files. Here's what's in it.
 
 ## The problem: the same player is not the same player
 
@@ -318,6 +318,189 @@ Which produces this at tight end in ACC Shitfest:
 
 That's the useful shape: three players in tiers of one, then a cluster of three you can treat as interchangeable, then a long flat tail. If you miss McBride, the decision isn't "take Loveland instead" — it's "wait, because Bowers/Fannin/Pitts are the same pick."
 
+## Dynasty: what's a roster spot worth over years?
+
+Redraft VOR asks what a player is worth this season. Dynasty asks what the roster spot is worth over all the years you'll hold it — and those are different enough questions that no amount of tuning the single-season number gets you there.
+
+Culver's Value Basket Lovers is a dynasty league. Rosters carry over whole, so its four "draft" rounds are a top-up over whoever is left unowned rather than a draft of the full player pool. Pulling the rosters endpoint says 322 players are already spoken for across the twelve teams.
+
+The value of holding a player is a discounted sum over a horizon:
+
+```text
+Σ  vor × age_ratio(y) × survival(y) × discount^y     for y in 0..horizon-1
+```
+
+The year-0 term is plain VOR, so a win-now pick scores exactly as redraft would score it and every later term is pure upside. That keeps the dynasty number on the same scale as VOR — you can put them in adjacent columns and the comparison means something.
+
+Three pieces feed it.
+
+**The age curve** is where production goes as a player ages, conditional on him still being startable. Fitted from the 2021–2025 archives using the delta method — comparing each player only to himself a year later, which keeps the selection effects in the level out of the age signal — as a weighted quadratic through chained year-over-year median ratios, normalized to 1.0 at the peak:
+
+```python
+Position.WR: {
+    21: 0.935, 22: 0.981, 23: 1.000, 24: 0.991, 25: 0.955, 26: 0.895,
+    27: 0.815, 28: 0.722, 29: 0.622, 30: 0.521, 31: 0.424, 32: 0.335,
+},
+```
+
+Receiver is the one I trust: 27–60 transitions per age, and the result — peak at 23, steady decline from 26 — matches published curves built on far more data. QB, RB and TE had 8–23 transitions per age over a narrow observed range, and their curves come out visibly flatter than reality, because the players who survive to be observed at 29 are the ones who aged well. That's survivorship bias sitting directly in the fitted curve, and the honest fix isn't to hand-steepen it.
+
+**The survival table** is where the bias gets corrected, because it's the thing the data actually shows cleanly — the probability of a startable season (8+ games, 50+ PPR points) following one:
+
+```python
+_SURVIVAL: dict[Position, list[tuple[int, float]]] = {
+    # (max age for this band, annual survival)
+    Position.QB: [(27, 0.80), (28, 0.72), (32, 0.62), (99, 0.55)],
+    Position.RB: [(22, 0.88), (25, 0.75), (27, 0.65), (28, 0.60), (99, 0.35)],
+    Position.WR: [(23, 0.81), (26, 0.73), (29, 0.65), (31, 0.62), (99, 0.50)],
+    Position.TE: [(25, 0.75), (29, 0.72), (99, 0.35)],
+}
+```
+
+Running back at 29 measured 0.250 against receiver's 0.643. That gap is the single biggest reason a 27-year-old back is a worse asset than his projection suggests: it isn't that he declines, it's that he stops being startable at all. The bands are forced monotone by age because the raw rates wobble at the tails on samples of 6–8, and a 33-year-old quarterback surviving more reliably than a 29-year-old is noise, not a finding.
+
+**The stance** is how far ahead you look and how steeply you discount getting there:
+
+```python
+CONTENDING = Stance("contending", horizon=3, discount=0.55)
+BALANCED   = Stance("balanced",   horizon=4, discount=0.75)
+REBUILDING = Stance("rebuilding", horizon=5, discount=0.90)
+```
+
+Contending and rebuilding are the same model with different patience, rather than separate scoring paths. A 3-year window at 0.55 makes this season roughly two-thirds of the score; rebuilding stretches to 5 years and barely discounts, so a 21-year-old's third season carries nearly the weight of his first.
+
+One detail that took a bug to find: future terms floor at zero.
+
+```python
+season = vor * ratio * cumulative_survival * (stance.discount**year)
+total += max(0.0, season)
+```
+
+A player who won't return value in 2029 is worth nothing then, not something negative — you drop him. Without the floor the arithmetic inverts, because discounting a *negative* VOR toward zero makes it larger, and the players most likely to wash out come out looking like the best long-term assets.
+
+### What it does to the board
+
+Culver's is set to `rebuilding` — 10th of 12 on projected starters with the third-oldest core and nothing at receiver. Here's the top of the board, with each player's redraft rank alongside:
+
+```text
+    name                   pos  age      vor     dyn  redraft#
+  1 Jahmyr Gibbs           RB   24     212.1   532.9         1
+  2 Bijan Robinson         RB   24     210.8   529.6         2
+  3 Ashton Jeanty          RB   22     128.9   366.8         6
+  4 Puka Nacua             WR   25     144.7   328.5         4
+  5 Jeremiyah Love         RB   21     103.1   316.9        14
+  6 Jonathan Taylor        RB   27     157.1   315.8         3
+  7 De'Von Achane          RB   24     124.0   311.6         8
+  8 Ja'Marr Chase          WR   26     129.6   277.4         5
+```
+
+Jonathan Taylor is the interesting row. He's the third-best player in this league for 2026 and the sixth-best asset, passed by a 22-year-old and a 21-year-old who are worth 60 and 100 fewer points *this season*. That's the model doing its job.
+
+The full reshuffle, over the top 60 redraft players:
+
+| Riser | Pos | Age | Redraft → Dynasty |
+|-------|-----|----:|------------------:|
+| Quinshon Judkins | RB | 22 | #27 → #17 (+10) |
+| Jeremiyah Love | RB | 21 | #14 → #5 (+9) |
+| Colston Loveland | TE | 22 | #29 → #20 (+9) |
+| Luther Burden | WR | 22 | #58 → #50 (+8) |
+
+| Faller | Pos | Age | Redraft → Dynasty |
+|--------|-----|----:|------------------:|
+| David Montgomery | RB | 29 | #36 → #49 (−13) |
+| Derrick Henry | RB | 32 | #18 → #30 (−12) |
+| Saquon Barkley | RB | 29 | #16 → #27 (−11) |
+| Christian McCaffrey | RB | 30 | #10 → #19 (−9) |
+
+Note how compressed that is. The biggest move in the top 60 is 13 places. Dynasty valuation is not a different sport — it's the same ranking with the aging curve applied, and anyone telling you a 30-year-old McCaffrey is worthless in dynasty is overcorrecting. He's still the 19th-most valuable asset in a *rebuilding* league.
+
+The stance is the bigger lever than any individual player's age:
+
+```text
+  player                 age   vor    contending  balanced  rebuilding
+  Bijan Robinson          24  210.8       331.1     423.5       529.6
+  Puka Nacua              25  144.7       219.0     271.9       328.5
+  Ja'Marr Chase           26  129.6       191.9     233.8       277.4
+  Christian McCaffrey     30  119.8       143.5     155.3       165.5
+  Trey McBride            26   96.9       148.7     188.3       234.7
+  Derrick Henry           32   86.5       103.6     112.2       119.5
+```
+
+Bijan gains 319 points between contending and rebuilding. McCaffrey gains 46. Henry gains 33. Switching stance doesn't shift everyone by a constant — it changes who the board is *for*.
+
+Because dynasty and redraft values live in separate fields, ranking stays a one-line decision:
+
+```python
+@property
+def draft_value(self) -> float:
+    """What to rank by: multi-year value in dynasty, VOR everywhere else."""
+    if self.dynasty_vor is not None:
+        return self.dynasty_vor
+    return self.vor or 0.0
+```
+
+`dynasty_vor` is only populated for dynasty leagues, so every other format keeps sorting on exactly the number it always did. The draft board, the auction engine, the recommender's wait-cost calculation and the trade analyzer all switched from `player.vor` to `player.draft_value` and needed no other changes. The trade analyzer gets the most out of it — swapping a 28-year-old for a 23-year-old is close to a wash on VOR and a clear win on asset value, which is the entire reason dynasty trades happen.
+
+## Keeper leagues: who's even in the pool
+
+Keepin' It Tight became a keeper league this year (and got renamed "Don't Fear the Keeper" on Sleeper, which is a better name). Two keepers per team, each costing one round earlier than where that player went last season.
+
+This is a smaller problem than dynasty valuation and a more annoying one, because the answer lives across three different API endpoints. Sleeper stores declared keepers on the *rosters* endpoint as bare player IDs. The price of each keeper depends on where he was drafted, which is only recorded in the *previous season's* draft. And which draft slot a keeper occupies depends on the draft order, which the commissioner may not have posted yet.
+
+```python
+round_cost = pick["round"] - config.keeper_round_advance
+```
+
+Kept players appear in the prior season's draft too, flagged `is_keeper`, so a player kept twice escalates correctly without any special handling. Waiver pickups were never drafted at all, and get priced at the last round, which is Sleeper's own convention.
+
+Pulling it live, nine of ten teams have declared so far:
+
+```text
+Keepers (9):
+  Rd  1: Puka Nacua               (rclock)
+  Rd  2: Saquon Barkley           (rclock)
+  Rd  2: Trey McBride             (No (Jeremiyah) Love)
+  Rd  5: DJ Moore                 (Karnage211)
+  Rd  6: Dak Prescott             (Karnage211)
+  Rd  7: Jaylen Waddle            (Grab 'Em By The Tight End)
+  Rd  9: Drake Maye               (QB-Haul)
+  Rd 10: Travis Etienne           (Grab 'Em By The Tight End)
+  Rd 12: Emeka Egbuka             (QB-Haul)
+```
+
+Teams that haven't declared contribute nothing, so the board fills in as the deadline approaches.
+
+### The bug that pays for the feature
+
+Sleeper stores whatever an owner declares without checking it against the league's own keeper rules. So this happens:
+
+```text
+Declared but NOT keepable -- in the draft pool:
+  Justin Jefferson (No (Jeremiyah) Love) -- round 1 last season -- no round 0 to pay with
+```
+
+A first-round pick can't be kept under a one-round-advance rule, because the cost would have to be a round that doesn't exist. Sleeper accepted the declaration anyway. So Justin Jefferson is going back into the draft pool, and at least one manager in that league does not know it yet.
+
+The engine reports these rather than silently dropping them, because "a top-five receiver is unexpectedly available" is the single most valuable thing that screen can tell me.
+
+There's one more state to handle. Sleeper leaves `draft_order` null right up until the commissioner sets it, and roster IDs are not draft slots — which is why every keeper above has no team index yet. An unplaced keeper is still off the board; he just can't be pinned to a pick:
+
+```python
+self._state.available_player_ids.discard(player.id)
+
+if keeper.team_index is None:
+    continue
+```
+
+Leaving them draftable is the worse error. A board that recommends a player nobody can actually pick is worse than a board that's vague about who owns him.
+
+Dynasty gets the blunter version of the same treatment — nobody is released between seasons, so the draftable pool is just the leftovers:
+
+```python
+# Dynasty: every owned player is off the board, no round cost involved.
+self._state.available_player_ids -= self._config.rostered_player_ids
+```
+
 ## Auction pricing is a different problem
 
 The Grand Experiment is a $200 auction. My first attempt reused `player.vor` and converted it to dollars proportionally. It priced the best player in the league at $118 — 59% of a roster's entire budget on one man, with $82 left for fourteen more.
@@ -387,7 +570,7 @@ def _wait_cost(engine, player, next_pick, runs) -> tuple[float, Player | None]:
     a tight end 36 points clear of his own fallback is a more urgent pick
     than a receiver 8 points clear of his, whatever their raw values say.
     """
-    mine = player.vor or 0.0
+    mine = player.draft_value
     for other in engine.get_available(player.position.value):
         if other.id == player.id or other.vor is None:
             continue
@@ -397,7 +580,7 @@ def _wait_cost(engine, player, next_pick, runs) -> tuple[float, Player | None]:
         if in_run:
             survival *= _RUN_SURVIVAL_PENALTY
         if survival >= 0.5:
-            return max(0.0, mine - other.vor), other
+            return max(0.0, mine - other.draft_value), other
     # Nobody else at this position is expected to last: the whole value walks.
     return mine, None
 ```
@@ -523,6 +706,8 @@ Ctrl+D  Draft log   Ctrl+B  Draft board  /       Search
 F1 All  F2 QB  F3 RB  F4 WR  F5 TE  F6 K  F7 DST
 ```
 
+The board adapts to the league type. Dynasty leagues swap the `VOR` column for `DynVOR` and add an age column, since age is what drives the number — with rookies marked `22R`, because age alone doesn't separate a 23-year-old rookie from a 23-year-old in his third season. Keeper leagues get the keeper board on the setup screen, invalid declarations and all.
+
 Picks are entered by fuzzy name match, so "jeff" finds Justin Jefferson. When several matches score within 5 points of each other, the higher-projected player wins the tie — which is what you meant when you typed three letters with the clock running.
 
 Sleeper leagues sync live. A background poller watches the draft API and records picks as other managers make them, by player ID rather than name, so the board stays current without me typing anyone else's picks.
@@ -547,7 +732,10 @@ Reach it over Tailscale or an authenticated tunnel. Do not open a port to the in
 - **Projections are the ceiling.** Everything downstream — VOR, tiers, auction values, wait cost — inherits whatever error is in the FantasyPros and Sleeper projections. A better scoring model on bad projections is still bad. The 0.76 correlation is roughly what preseason consensus is worth, and no amount of arithmetic on top of it changes that.
 - **The FLEX split is a guess.** 45/45/10 across RB/WR/TE is a reasonable approximation of how flex slots get used, not a measurement. It moves replacement level, which moves everything.
 - **Some scoring rules aren't modelled.** Special-teams forced fumbles, defensive two-point returns, and QB hits show up in the warning log because nothing projects them. Those leagues' point totals are slightly understated across the board — which mostly cancels out in a ranking, but not entirely.
-- **Age curves and replaceability multipliers are judgment, not regression.** The predictability deflators for K and DST come from measured correlations. The RB age cliff at 28/29/30 and the 1.10 tight end premium come from received fantasy wisdom that I happen to believe. They should be fitted.
+- **Age curves and replaceability multipliers are judgment, not regression.** The predictability deflators for K and DST come from measured correlations. The redraft RB age cliff at 28/29/30 and the 1.10 tight end premium come from received fantasy wisdom that I happen to believe. They should be fitted — the dynasty curves now are, which makes the redraft ones harder to defend.
+- **The dynasty age curves are thin outside receiver.** WR had 27–60 transitions per age and lands on a curve that matches published work. QB, RB and TE had 8–23 over a narrow range, and the players observed at 29 are the ones who aged well, so those curves are flatter than reality. The survival table carries most of the real decline for those positions, which is a defensible split but not the one I'd choose with more data.
+- **Dynasty ignores draft picks entirely.** Future rookie picks are tradeable assets in these leagues and the engine has no concept of them, so the trade analyzer is only correct for player-for-player deals.
+- **Kickers, defenses and IDP get a reasoned dynasty prior, not a measurement.** There's no fittable aging signal for them: the archived stat lines lose their defensive keys in translation, and only 21 of 3,968 defenders in 2024 score anything at all. They fall back to a flat age curve and an age-graded survival prior — the grading reflects that a 32-year-old is likelier than a 24-year-old to lose his job, which is not in dispute, rather than any measured position-specific rate.
 - **The backtest measures a ceiling, not the engine.** Covered above, but worth repeating, because a table full of green numbers is exactly the kind of thing that talks you out of reading the code that produced it.
 
 ## Technical notes
