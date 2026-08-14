@@ -2,7 +2,8 @@
 title: "The LoadBalancer That Never Worked: Migrating MetalLB from L2 to BGP"
 date: 2026-07-30
 draft: false
-tags: ["metallb", "bgp", "kubernetes", "k3s", "homelab", "networking", "unifi", "argocd", "dns", "debugging"]
+categories: ["kubernetes", "homelab", "networking", "debugging"]
+tags: ["metallb", "bgp", "unifi", "k3s"]
 ---
 
 I started the day asking why one of my Frigate cameras was using more CPU than the others. I finished it having moved every LoadBalancer in my Kubernetes cluster onto BGP-routed addresses, because along the way I found a service that had been silently unreachable for two years.

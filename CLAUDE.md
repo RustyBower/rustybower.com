@@ -1,6 +1,12 @@
 # rustybower.com
 
-Hugo blog (PaperMod theme). Posts live in `content/posts/`, one Markdown file each.
+Hugo blog (Blowfish theme, `ocean` colour scheme). Posts live in `content/posts/`,
+one Markdown file each.
+
+**Blowfish requires Hugo ≥ 0.158.0.** The in-pod builder image is pinned in the
+`kustomize` repo at `environments/rustycloud/apps/hugo/deployment.yaml` — bump it
+there before any theme update that raises the floor, or the site fails to build
+with no CI to catch it.
 
 ## Publishing cadence — posts are queued bi-weekly
 
@@ -45,9 +51,62 @@ Hugo rebuilds in-pod, nginx serves the output. Pushing to `master` is the deploy
 title: "Sentence-case Title, Fairly Specific"
 date: 2026-09-01
 draft: false
-tags: ["lowercase", "kebab-case"]
+categories: ["kubernetes", "homelab", "debugging"]
+tags: ["k3s", "sqlite", "kine"]
 ---
 ```
+
+Note that several posts use CRLF line endings. Edit front matter in place rather
+than rewriting whole files — normalising the endings shifts byte offsets and has
+previously tripped a `slice bounds out of range` panic in Hugo's `.Summary`.
+
+## Taxonomy — `categories` are closed, `tags` are open
+
+Every post carries **both** fields, and they do different jobs.
+
+### `categories` — broad topics, closed set
+
+The navigation backbone. Pick **2–4** from this table and nothing else:
+
+| Category | Covers |
+|---|---|
+| `kubernetes` | K3s, kine, etcd, cluster internals |
+| `homelab` | self-hosted infrastructure generally |
+| `home-automation` | Home Assistant, Z-Wave, HVAC, AppDaemon, tablets |
+| `python` | Python tooling, Textual/TUI apps |
+| `gitops` | ArgoCD, Kustomize, Keel, Renovate, CI/CD, registries |
+| `llm` | LLMs, ML, computer vision, OpenCV, Coral TPU |
+| `networking` | DNS, Pi-hole, MetalLB, BGP, UniFi |
+| `data` | DuckDB, Parquet, Jupyter, statistics, datasets |
+| `debugging` | post-mortems and root-cause write-ups |
+| `photography` | Immich, photo pipelines, scanning |
+| `audio` | whole-home audio, Music Assistant, Subsonic |
+| `dashboards` | Homepage, dashboard UIs |
+
+**Never invent a category.** A post that seems to need a new one almost always
+fits an existing one. Adding to this table requires two-plus posts that need it,
+and the table must be updated in the same commit — single-use entries are how the
+old flat tag list grew to 71 entries across 18 posts, 52 used exactly once.
+
+### `tags` — product and tool names, open set
+
+Specific things a reader would search for by name: `frigate`, `immich`,
+`birdbuddy`, `argocd`, `duckdb`, `metallb`. Add new ones freely — a tag used by
+one post is fine here, because this is a lookup index, not navigation.
+
+Tag what the post is genuinely *about*, not everything it mentions in passing.
+Two to four is typical.
+
+Both fields are lowercase kebab-case YAML lists.
+
+### Rendering
+
+`/categories/` and `/tags/` both render as a pill cloud via
+`layouts/partials/term-link/text.html` and `layouts/_default/terms.html`, which
+override the theme's sparse default grid. Styles are in `assets/css/custom.css` —
+Blowfish ships a **prebuilt** Tailwind bundle, so new utility classes have no CSS
+behind them and anything custom must be written as plain CSS against the scheme's
+`--color-*` variables.
 
 ## House style
 

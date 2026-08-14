@@ -2,7 +2,8 @@
 title: "How K3s Silently Grew a 40 GB SQLite Database and Took Down My Cluster"
 date: 2026-09-08
 draft: false
-tags: ["kubernetes", "k3s", "sqlite", "homelab", "debugging", "etcd", "kine"]
+categories: ["kubernetes", "homelab", "debugging"]
+tags: ["k3s", "sqlite", "kine"]
 ---
 
 My cluster — a single-node K3s instance running about 60 ArgoCD-managed applications — had been slowly dying for months. Pods crash-looped with "context deadline exceeded" errors. Leader elections failed. The metrics server stopped working entirely. I assumed it was resource pressure and tuned probe timeouts. The real problem was underneath all of it: K3s's SQLite datastore had silently grown to 40 GB.

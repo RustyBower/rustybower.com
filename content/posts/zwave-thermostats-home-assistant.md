@@ -2,7 +2,8 @@
 title: "Optimizing Z-Wave Thermostats for Home Assistant Control"
 date: 2026-01-17
 draft: false
-tags: ["home-assistant", "z-wave", "hvac", "smart-home", "automation"]
+categories: ["home-automation", "homelab"]
+tags: ["home-assistant", "z-wave"]
 ---
 
 I have six Honeywell T6 Pro Z-Wave thermostats throughout my house controlling a multi-zone HVAC system. Out of the box, these thermostats have their own scheduling and "smart" features that conflict with Home Assistant automations. Here's how I configured them to let HA take full control.

@@ -1,9 +1,29 @@
 baseURL = "https://www.rustybower.com/"
-languageCode = "en-us"
 title = "Rusty Bower"
-theme = "PaperMod"
+theme = "blowfish"
+defaultContentLanguage = "en"
 
-pagination.pagerSize = 10
+enableRobotsTXT = true
+enableEmoji = true
+summaryLength = 30
+
+buildDrafts = false
+buildFuture = false
+
+[pagination]
+  pagerSize = 10
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[sitemap]
+  changefreq = "weekly"
+  filename = "sitemap.xml"
+  priority = 0.5
 
 [related]
   includeNewer = true
@@ -15,77 +35,133 @@ pagination.pagerSize = 10
 
 [markup]
   [markup.goldmark]
+    [markup.goldmark.parser]
+      wrapStandAloneImageWithinParagraph = false
+      [markup.goldmark.parser.attribute]
+        block = true
+    [markup.goldmark.renderer]
+      unsafe = true
     [markup.goldmark.extensions]
       [markup.goldmark.extensions.passthrough]
         enable = true
         [markup.goldmark.extensions.passthrough.delimiters]
           block = [["\\[", "\\]"], ["$$", "$$"]]
           inline = [["\\(", "\\)"]]
-    [markup.goldmark.renderer]
-      unsafe = true
-  [markup.tableOfContents]
-    endLevel = 4
-    ordered = true
-    startLevel = 2
   [markup.highlight]
     noClasses = false
     codeFences = true
     guessSyntax = true
     lineNos = false
     tabWidth = 4
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 4
+    ordered = true
 
 [params]
-  author = "Rusty Bower"
-  description = "Security engineering, systems, and thoughts."
+  colorScheme = "ocean"
+  defaultAppearance = "dark"
+  autoSwitchAppearance = true
+
+  enableSearch = true
+  enableCodeCopy = true
+  enableA11y = true
+
   mainSections = ["posts"]
   rssFullContent = true
-  env = "production"
-  defaultTheme = "auto"
-  ShowReadingTime = true
-  ShowShareButtons = false
-  ShowPostNavLinks = true
-  ShowBreadCrumbs = true
-  ShowCodeCopyButtons = true
-  ShowToc = true
-  TocOpen = false
-  ShowRssButtonInSectionTermList = true
+  disableImageOptimization = false
 
-  [params.homeInfoParams]
-    Title = "Rusty Bower"
-    Content = "Security engineering, systems, and thoughts."
+  fingerprintAlgorithm = "sha512"
 
-  [[params.socialIcons]]
-    name = "github"
-    url = "https://github.com/RustyBower"
+  [params.header]
+    layout = "fixed-fill-blur"
 
-  [[params.socialIcons]]
-    name = "rss"
-    url = "/index.xml"
+  [params.footer]
+    showMenu = true
+    showCopyright = true
+    showThemeAttribution = false
+    showAppearanceSwitcher = true
+    showScrollToTop = true
 
-  [params.cover]
-    hiddenInList = false
-    hiddenInSingle = false
+  [params.homepage]
+    layout = "profile"
+    showRecent = true
+    showRecentItems = 6
+    showMoreLink = true
+    showMoreLinkDest = "/posts/"
+    cardView = false
+
+  [params.article]
+    showDate = true
+    showAuthor = false
+    showHero = false
+    showBreadcrumbs = true
+    showHeadingAnchors = true
+    showPagination = true
+    showReadingTime = true
+    showWordCount = true
+    showTableOfContents = true
+    showTaxonomies = true
+    showTags = true
+    showRelatedContent = true
+    relatedContentLimit = 3
+    showZenMode = true
+    showEdit = false
+    showViews = false
+    showLikes = false
+
+  [params.list]
+    showSummary = true
+    showBreadcrumbs = false
+    groupByYear = true
+    showCards = false
+    showTableOfContents = false
+
+  [params.taxonomy]
+    showTermCount = true
+    cardView = false
+
+  [params.term]
+    showBreadcrumbs = false
+    groupByYear = false
+    showTableOfContents = false
+
+[languages]
+  [languages.en]
+    locale = "en"
+    label = "English"
+    weight = 1
+    title = "Rusty Bower"
+    [languages.en.params]
+      displayName = "EN"
+      isoCode = "en"
+      rtl = false
+      dateFormat = "January 2, 2006"
+      description = "Security engineering, systems, and thoughts."
+      copyright = "© Rusty Bower"
+      [languages.en.params.author]
+        name = "Rusty Bower"
+        image = "img/avatar.png"
+        imageQuality = 96
+        headline = "Security engineering, systems, and thoughts."
+        bio = "I build and break things in a homelab that is much larger than it needs to be."
+        links = [
+          { github = "https://github.com/RustyBower" },
+          { email = "mailto:rusty@rustybower.com" },
+        ]
 
 [menu]
   [[menu.main]]
-    name = "Home"
-    url = "/"
-    weight = 1
+    name = "Posts"
+    pageRef = "posts"
+    weight = 10
 
   [[menu.main]]
-    name = "Archives"
-    url = "/archives"
-    weight = 2
-
-  [[menu.main]]
-    name = "Search"
-    url = "/search"
-    weight = 3
+    name = "Topics"
+    pageRef = "categories"
+    weight = 20
 
   [[menu.main]]
     name = "Tags"
-    url = "/tags"
-    weight = 4
-
-[outputs]
-  home = ["HTML", "RSS", "JSON"]
+    pageRef = "tags"
+    weight = 30

@@ -1,0 +1,13 @@
+{{/*
+  Overrides Blowfish's default term link, which renders a sparse 4-column grid of
+  "name · count". With a dozen topics and ~30 product tags that reads as a broken
+  list rather than an index, so this renders a dense pill cloud instead.
+  Styles live in assets/css/custom.css — Blowfish ships a prebuilt Tailwind
+  bundle, so new utility classes would have no CSS behind them.
+*/}}
+<a class="term-pill" href="{{ .Page.RelPermalink }}">
+  <span class="term-pill__name">{{ .Page.Title | emojify }}</span>
+  {{ if site.Params.taxonomy.showTermCount | default true }}
+    <span class="term-pill__count">{{ .Count }}</span>
+  {{ end }}
+</a>

@@ -2,7 +2,8 @@
 title: "Whole-Home Audio with Music Assistant: Kubernetes Gotchas and a Silent Raspberry Pi"
 date: 2026-08-11
 draft: false
-tags: ["music-assistant", "kubernetes", "home-assistant", "homelab", "raspberry-pi", "picoreplayer", "audio", "subsonic"]
+categories: ["kubernetes", "homelab", "home-automation", "audio"]
+tags: ["music-assistant", "raspberry-pi", "picoreplayer", "subsonic"]
 ---
 
 My music setup had accreted into a mess. Across two Kubernetes clusters I was running Navidrome, Lyrion Music Server (LMS), beets, and my own AI radio station (SUB/WAVE) - plus a Raspberry Pi running piCorePlayer wired into a Dayton DAX66 matrix amp for whole-home audio. Four things that all "played music," none of which talked to each other, and no single place to control any of it from Home Assistant.

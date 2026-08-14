@@ -2,7 +2,8 @@
 title: "From Keel to Renovate: Better Container Image Updates for GitOps"
 date: 2026-01-17
 draft: false
-tags: ["kubernetes", "renovate", "keel", "gitops", "docker", "automation"]
+categories: ["kubernetes", "homelab", "gitops"]
+tags: ["keel", "renovate"]
 ---
 
 For years I used Keel to automatically update container images in my Kubernetes clusters. It worked, but as I moved to GitOps with ArgoCD, Keel's push-based approach became a liability. I migrated to Renovate for PR-based image updates, and it's been a significant improvement.

@@ -2,7 +2,8 @@
 title: "Fixing 10,000 Upside-Down Scanned Slides with a Local Vision LLM"
 date: 2026-02-23
 draft: false
-tags: ["python", "ollama", "llm", "vision", "photography", "opencv"]
+categories: ["python", "llm", "photography"]
+tags: ["ollama", "opencv"]
 ---
 
 My grandfather had about 10,000 35mm slides. I rented a [SlideSnap X1](https://www.slidesnap.com/) and spent a weekend feeding them through — 33 boxes worth, organized into folders by box. The scanner itself was great, but when you're pushing through thousands of slides in a weekend, some inevitably go in upside down or backwards. No metadata, no EXIF orientation flags — just thousands of JPEGs, some right-side up, some not, sitting on a NAS.

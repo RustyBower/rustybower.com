@@ -2,7 +2,8 @@
 title: "Building a Self-Updating Dashboard with Homepage and Kubernetes"
 date: 2026-01-17
 draft: false
-tags: ["kubernetes", "homelab", "dashboard", "homepage"]
+categories: ["kubernetes", "homelab", "dashboards"]
+tags: ["homepage"]
 ---
 
 One of the challenges of running a homelab with dozens of services is keeping track of what's running and where. I recently deployed [Homepage](https://gethomepage.dev/) - a modern, fully static dashboard that automatically discovers services from Kubernetes ingresses.

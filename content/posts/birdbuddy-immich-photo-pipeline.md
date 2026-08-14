@@ -2,7 +2,8 @@
 title: "Automating a Smart Bird Feeder's Photo Archive with Kubernetes and Immich"
 date: 2026-07-16
 draft: false
-tags: ["kubernetes", "immich", "birdbuddy", "python", "homelab", "cronjob", "photography"]
+categories: ["kubernetes", "homelab", "python", "photography"]
+tags: ["birdbuddy", "immich"]
 ---
 
 My [Bird Buddy](https://mybirdbuddy.com/) smart feeder takes a photo every time a bird visits. Over a few months, that adds up to thousands of images — all sitting in Bird Buddy's cloud app with no good way to search, organize, or back them up. I wanted them in [Immich](https://immich.app/), my self-hosted photo library, organized by species and properly timestamped.

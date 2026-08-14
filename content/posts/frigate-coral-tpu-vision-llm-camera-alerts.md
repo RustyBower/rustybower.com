@@ -2,7 +2,8 @@
 title: "Teaching Security Cameras to Describe What They See"
 date: 2026-07-28
 draft: false
-tags: ["frigate", "coral-tpu", "llm", "homelab", "kubernetes", "home-automation", "computer-vision"]
+categories: ["kubernetes", "homelab", "home-automation", "llm"]
+tags: ["frigate", "coral-tpu"]
 ---
 
 A notification that says "person detected on doorbell" is useful. A notification that says "a delivery driver in a brown UPS uniform placed a medium-sized box on the porch and is walking back to the truck" is significantly more useful — especially when you're in a meeting and trying to decide whether to get up.

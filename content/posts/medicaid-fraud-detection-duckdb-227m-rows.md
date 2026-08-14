@@ -2,7 +2,8 @@
 title: "Finding Fraud in $1 Trillion of Medicaid Data with DuckDB"
 date: 2026-02-14
 draft: false
-tags: ["data", "duckdb", "fraud", "medicaid", "python", "jupyter", "parquet"]
+categories: ["python", "data"]
+tags: ["duckdb", "parquet", "jupyter"]
 ---
 
 CMS recently published provider-level Medicaid spending data from T-MSIS — every fee-for-service, managed care, and CHIP claim from 2018 through 2024, aggregated by billing provider, procedure code, and month. 227 million rows. $1.09 trillion in payments. I wanted to see what falls out when you run some basic fraud heuristics against it.

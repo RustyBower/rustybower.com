@@ -2,7 +2,8 @@
 title: "Fleet-Managing Fire Tablets from Kubernetes"
 date: 2026-08-25
 draft: false
-tags: ["kubernetes", "homelab", "smart-home", "home-assistant", "cronjob", "fire-tablet"]
+categories: ["kubernetes", "homelab", "home-automation"]
+tags: ["home-assistant", "fire-tablet"]
 ---
 
 I have three Amazon Fire tablets mounted around the house running [Fully Kiosk Browser](https://www.fullykiosk.com/) as Home Assistant dashboards. They're cheap ($35-50 each during sales), they have decent screens, and Fully Kiosk turns them into locked-down kiosks that show a dashboard and nothing else.

@@ -2,7 +2,8 @@
 title: "Mac Studio as a Kubernetes Compute Satellite"
 date: 2026-07-21
 draft: false
-tags: ["kubernetes", "mac-studio", "docker", "homelab", "ml", "llm", "gitops"]
+categories: ["kubernetes", "homelab", "gitops", "llm"]
+tags: ["mac-studio", "docker"]
 ---
 
 My K3s cluster runs on six Intel NUCs. They're great for the 50+ containers that make up my homelab — Plex, Home Assistant, Frigate, Paperless, the usual suspects. But they're terrible at machine learning. Four Skylake cores and 32 GB of RAM per node doesn't get you far when Immich wants to classify 80,000 photos or Frigate wants a vision model to describe who's at your door.

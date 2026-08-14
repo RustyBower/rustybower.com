@@ -2,7 +2,8 @@
 title: "Unit-Testing Home Automations That Run in Kubernetes"
 date: 2026-07-16
 draft: false
-tags: ["home-assistant", "appdaemon", "python", "kubernetes", "testing", "homelab", "smart-home"]
+categories: ["kubernetes", "homelab", "home-automation", "python"]
+tags: ["appdaemon", "home-assistant"]
 ---
 
 Home automations are code that controls physical things. When they break, the consequences aren't a 500 error — they're a garage door that won't close in a snowstorm, or window shades that open at 3 AM, or a tablet that charges to 100% and stays plugged in for months until the battery swells.

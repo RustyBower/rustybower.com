@@ -2,7 +2,8 @@
 title: "Building a Fantasy Football Draft Engine for Seven Leagues at Once"
 date: 2026-09-22
 draft: false
-tags: ["python", "fantasy-football", "nfl", "textual", "tui", "statistics", "sleeper", "yahoo"]
+categories: ["python", "data"]
+tags: ["fantasy-football", "sleeper", "yahoo", "textual"]
 ---
 
 I play in seven fantasy football leagues. Five on Sleeper, two on Yahoo. Six snake drafts and one auction. Team counts of 10 and 12. PPR, half-PPR, and one league that pays a point for every first down. One of them scores individual defensive players. One scores kickers purely on field goal yardage with no penalty for a miss. Five are ordinary redrafts, one is a keeper league, and one is a dynasty league where rosters carry over whole.

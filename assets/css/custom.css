@@ -1,0 +1,72 @@
+/* Blowfish loads this automatically (layouts/partials/head.html). The theme ships
+   a prebuilt Tailwind bundle, so anything new has to be written as plain CSS
+   against the scheme's --color-* variables rather than as utility classes. */
+
+/* --- Taxonomy index: dense pill cloud -------------------------------------
+   Paired with layouts/partials/term-link/text.html. The theme's own layout is a
+   4-column grid of bare "name · count" links, which looks unfinished at our
+   term counts. */
+
+.term-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  margin: 0 0.4rem 0.55rem 0;
+  border: 1px solid rgb(var(--color-neutral-200));
+  border-radius: 9999px;
+  background-color: rgb(var(--color-neutral-50));
+  line-height: 1.2;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.term-pill:hover {
+  border-color: rgb(var(--color-primary-400));
+  background-color: rgb(var(--color-primary-50));
+  transform: translateY(-1px);
+}
+
+.term-pill__name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgb(var(--color-neutral-800));
+}
+
+.term-pill:hover .term-pill__name {
+  color: rgb(var(--color-primary-700));
+}
+
+.term-pill__count {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--color-neutral-500));
+}
+
+.dark .term-pill {
+  border-color: rgb(var(--color-neutral-700));
+  background-color: rgb(var(--color-neutral-800));
+}
+
+.dark .term-pill:hover {
+  border-color: rgb(var(--color-primary-500));
+  background-color: rgb(var(--color-neutral-700));
+}
+
+.dark .term-pill__name {
+  color: rgb(var(--color-neutral-100));
+}
+
+.dark .term-pill:hover .term-pill__name {
+  color: rgb(var(--color-primary-300));
+}
+
+.dark .term-pill__count {
+  color: rgb(var(--color-neutral-400));
+}
+
+/* The width constraint on the surrounding container is handled in
+   layouts/_default/terms.html, which drops the theme's max-w-prose. */

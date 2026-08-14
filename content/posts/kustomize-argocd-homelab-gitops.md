@@ -2,7 +2,8 @@
 title: "GitOps for Homelabs: Kustomize + ArgoCD Patterns and Pitfalls"
 date: 2026-01-17
 draft: false
-tags: ["kubernetes", "argocd", "kustomize", "gitops", "homelab", "infrastructure-as-code"]
+categories: ["kubernetes", "homelab", "gitops"]
+tags: ["argocd", "kustomize"]
 ---
 
 I manage two Kubernetes environments - a home cluster (bowerhaus) and a cloud cluster (rustycloud) - using GitOps with Kustomize and ArgoCD. After running this setup for a while, I've learned what works, what doesn't, and some non-obvious gotchas.

@@ -2,7 +2,8 @@
 title: "Self-Hosted CI/CD with Drone, Gitea, and Harbor"
 date: 2026-01-17
 draft: false
-tags: ["cicd", "drone", "gitea", "harbor", "kubernetes", "docker", "devops"]
+categories: ["kubernetes", "homelab", "gitops"]
+tags: ["drone", "gitea", "harbor"]
 ---
 
 I run a fully self-hosted CI/CD pipeline using Drone for builds, Gitea for git hosting, and Harbor for container registry. No GitHub Actions, no Docker Hub, no external dependencies. Here's how it all fits together.

@@ -2,7 +2,8 @@
 title: "Building a Home Assistant Dashboard with Whole Home Audio Control"
 date: 2026-01-26
 draft: false
-tags: ["home-assistant", "smart-home", "lovelace", "audio", "dashboard", "mushroom"]
+categories: ["home-automation", "audio", "dashboards"]
+tags: ["home-assistant", "lovelace", "mushroom"]
 ---
 
 My Home Assistant dashboard has evolved significantly over the past year. What started as the default auto-generated cards has become a carefully organized interface that my whole family actually uses. Here's how I built it, with a focus on the whole home audio system that ties everything together.

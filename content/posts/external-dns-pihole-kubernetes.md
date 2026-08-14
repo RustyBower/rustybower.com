@@ -2,7 +2,8 @@
 title: "Auto-Populating Pi-hole DNS from Kubernetes Ingresses"
 date: 2026-01-17
 draft: false
-tags: ["kubernetes", "pihole", "dns", "external-dns", "homelab"]
+categories: ["kubernetes", "homelab", "networking"]
+tags: ["external-dns", "pihole"]
 ---
 
 Managing DNS records for a homelab with dozens of services is tedious. Every time you deploy something new, you have to remember to add a DNS record. I solved this by using external-dns to automatically create Pi-hole DNS entries from Kubernetes ingress resources.
