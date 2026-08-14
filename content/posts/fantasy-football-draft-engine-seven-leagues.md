@@ -1,6 +1,6 @@
 ---
 title: "Building a Fantasy Football Draft Engine for Seven Leagues at Once"
-date: 2026-09-08
+date: 2026-09-22
 draft: false
 tags: ["python", "fantasy-football", "nfl", "textual", "tui", "statistics", "sleeper", "yahoo"]
 ---
