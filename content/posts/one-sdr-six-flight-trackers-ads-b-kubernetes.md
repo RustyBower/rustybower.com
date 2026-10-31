@@ -134,7 +134,7 @@ While pulling those numbers, I noticed something wrong in the stats readsb publi
 }
 ```
 
-RTL-SDR oscillators are cheap, but they aren't 43,000 ppm wrong. That number says the dongle is delivering about 4.3% fewer samples than the wall clock expects. `samples_lost` agrees: 3.6% over two weeks, and 4.4% in the five-minute window I looked at.
+RTL-SDR oscillators are cheap, but they aren't 43,000 ppm wrong. That number says the dongle is delivering about 4.3% fewer samples than the wall clock expects. `samples_lost` agrees on the direction: 3.6% over two weeks, and 4.4% in the five-minute window I looked at. That counter is an undercount, though. Comparing `samples_processed` with what 2.4 million samples a second should have produced, readsb received about 93% of the expected samples, so the real loss over those two weeks is closer to 7%.
 
 readsb's source is clear about what this means. When the measured drift goes past -1000 ppm, it logs:
 
@@ -143,7 +143,7 @@ fprintf(stderr, "Lost %d packets (%.1f us) on USB, MLAT could be UNSTABLE, check
         "(or the system clock jumped for some reason)\n", packets_lost, diff_us, ppm);
 ```
 
-The clock jump explanation doesn't fit a loss that holds across every window. `samples_dropped` also rules out the other usual suspect. That counter goes up when the decoder falls behind and the buffer fills, and it's exactly zero, so the NUC's CPU is keeping up. The samples are vanishing before readsb ever sees them.
+The log on the NUC has 37,243 of those warnings. The first one appeared 73 seconds after readsb first started, and they have continued ever since, at anywhere from 14 to 88 lost packets per warning depending on the hour. A clock jump doesn't fit a loss that never stops. `samples_dropped` also rules out the other usual suspect. That counter goes up when the decoder falls behind and the buffer fills, and it's exactly zero, so the NUC's CPU is keeping up. The samples are vanishing before readsb ever sees them.
 
 Losing 4% of the airwaves is annoying but survivable. The worse damage is probably to MLAT. Timestamps come from counting samples, so when USB loses a block the count silently falls behind real time, and multilateration depends on those timestamps agreeing with other receivers to within a very small margin. On that same morning, the FlightAware client reported this:
 
@@ -158,7 +158,7 @@ So the attic has a prerequisite. A radio that loses data to the USB bus won't im
 
 ## Caveats
 
-- **The USB cause isn't found yet.** I know samples are being lost on USB, not why. The bus, the port, power, or the dongle itself are all still candidates, and I haven't looked at the kernel logs on the NUC.
+- **The USB cause isn't found yet.** I know samples are being lost on USB, not why. The kernel log shows no USB resets or disconnects since boot, the dongle is on a direct port with no hub, and the CPU is nearly idle. The dongle has also logged occasional control errors (`i2c wr failed=-9`). That leaves the dongle itself, the port, power, and CPU sleep states as candidates.
 - **The MLAT link is inferred.** It's what readsb warns about and it fits the logs, but those logs are a snapshot from a quiet morning with few aircraft around. MLAT needs traffic and nearby peers as well as a good clock.
 - **The elevation figures are estimates.** They use a 4/3-earth model and assume an aircraft at 11,000 m.
 - **The DNS fix treats the symptom.** The Tailscale search domain is still in every pod. `tailscale set --accept-dns=false` on the nodes is the real fix, and anything else with a static resolver is exposed until then.
