@@ -154,11 +154,21 @@ Aircraft: 1 of 1 Mode S, 5 of 5 ADS-B used
 
 The aggregator clients were producing less than a position a minute, and there wasn't a single MLAT-derived aircraft on the map.
 
+The CPU was nearly idle, which turned out to be the clue. The NUC spent most of its time in C10, its deepest sleep state, which takes 890 µs to wake from. So I turned off everything deeper than C1E for five minutes, then turned it back on:
+
+| Five-minute window | Warnings | Packets lost |
+|---|---|---|
+| Before | 10 | 197 |
+| Deep C-states off | 1 | 11 |
+| Restored | 10 | 654 |
+
+A box that's too idle was starving the radio.
+
 So the attic has a prerequisite. A radio that loses data to the USB bus won't improve by moving to a better view, and a hot attic and a longer cable could make it worse.
 
 ## Caveats
 
-- **The USB cause isn't found yet.** I know samples are being lost on USB, not why. The kernel log shows no USB resets or disconnects since boot, the dongle is on a direct port with no hub, and the CPU is nearly idle. The dongle has also logged occasional control errors (`i2c wr failed=-9`). That leaves the dongle itself, the port, power, and CPU sleep states as candidates.
+- **The USB result is one short test.** Five minutes with deep C-states off, on a single morning, is strong evidence but not a long-term measurement. It also doesn't explain the occasional control errors from the dongle (`i2c wr failed=-9`). The kernel log shows no USB resets or disconnects.
 - **The MLAT link is inferred.** It's what readsb warns about and it fits the logs, but those logs are a snapshot from a quiet morning with few aircraft around. MLAT needs traffic and nearby peers as well as a good clock.
 - **The elevation figures are estimates.** They use a 4/3-earth model and assume an aircraft at 11,000 m.
 - **The DNS fix treats the symptom.** The Tailscale search domain is still in every pod. `tailscale set --accept-dns=false` on the nodes is the real fix, and anything else with a static resolver is exposed until then.
