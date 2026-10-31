@@ -8,7 +8,7 @@ tags: ["ads-b", "readsb", "ultrafeeder", "flightradar24"]
 
 Aircraft broadcast their position, altitude, and callsign on 1090 MHz, unencrypted, about twice a second. A cheap RTL-SDR dongle can hear them. I plugged one into a NUC, pointed the output at my Kubernetes cluster, and two weeks later that one dongle feeds six flight tracking networks and a set of Home Assistant sensors.
 
-It also turns out to be losing about 4% of everything it hears over USB. More on that below, because it's the most interesting thing I found.
+It also turned out to be losing about 7% of everything it heard over USB, for a reason I didn't expect. More on that below, because it's the most interesting thing I found.
 
 ## The layout
 
@@ -145,7 +145,7 @@ fprintf(stderr, "Lost %d packets (%.1f us) on USB, MLAT could be UNSTABLE, check
 
 The log on the NUC has 37,243 of those warnings. The first one appeared 73 seconds after readsb first started, and they have continued ever since, at anywhere from 14 to 88 lost packets per warning depending on the hour. A clock jump doesn't fit a loss that never stops. `samples_dropped` also rules out the other usual suspect. That counter goes up when the decoder falls behind and the buffer fills, and it's exactly zero, so the NUC's CPU is keeping up. The samples are vanishing before readsb ever sees them.
 
-Losing 4% of the airwaves is annoying but survivable. The worse damage is probably to MLAT. Timestamps come from counting samples, so when USB loses a block the count silently falls behind real time, and multilateration depends on those timestamps agreeing with other receivers to within a very small margin. On that same morning, the FlightAware client reported this:
+Losing that much of the airwaves is annoying but survivable. The worse damage is probably to MLAT. Timestamps come from counting samples, so when USB loses a block the count silently falls behind real time, and multilateration depends on those timestamps agreeing with other receivers to within a very small margin. On that same morning, the FlightAware client reported this:
 
 ```
 Server status:   clock unstable
@@ -170,11 +170,19 @@ w /sys/devices/system/cpu/cpu*/cpuidle/state[3-8]/disable - - - - 1
 
 Seven minutes later, the last five-minute window showed zero lost samples, 100% of the expected sample rate, and an `estimated_ppm` of -0.9. The dongle's oscillator was never the problem.
 
+MLAT took a little longer to come back. The FlightAware client still said `clock unstable` 11 minutes after the fix, and 26 minutes after it, the status had changed:
+
+```
+Server status:   synchronized with 102 nearby receivers
+```
+
+The aggregator clients went from less than a position a minute to as many as 23.
+
 That cleared the way for the attic. A radio that loses data to the USB bus wouldn't have improved with a better view, and the baseline above was measured with the problem in place, so the attic now has to beat numbers from a receiver that was missing about 7% of its samples.
 
 ## Caveats
 
 - **The USB result is short-term.** Minutes of clean data on a single morning is strong evidence, not a long-term measurement, and limiting C-states costs some idle power. It also doesn't explain the occasional control errors from the dongle (`i2c wr failed=-9`). The kernel log shows no USB resets or disconnects.
-- **The MLAT link is inferred.** It's what readsb warns about and it fits the logs, but those logs are a snapshot from a quiet morning with few aircraft around. MLAT needs traffic and nearby peers as well as a good clock.
+- **The MLAT recovery is one data point.** The timing fits the fix, but MLAT also depends on traffic and nearby peers, and that morning was quiet. It needs a longer look before I call it solved.
 - **The elevation figures are estimates.** They use a 4/3-earth model and assume an aircraft at 11,000 m.
 - **The DNS fix treats the symptom.** The Tailscale search domain is still in every pod. `tailscale set --accept-dns=false` on the nodes is the real fix, and anything else with a static resolver is exposed until then.
