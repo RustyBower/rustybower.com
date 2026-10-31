@@ -162,13 +162,19 @@ The CPU was nearly idle, which turned out to be the clue. The NUC spent most of 
 | Deep C-states off | 1 | 11 |
 | Restored | 10 | 654 |
 
-A box that's too idle was starving the radio.
+A box that's too idle was starving the radio. The permanent fix is one line in `/etc/tmpfiles.d/`, which needs no reboot and reapplies at boot:
 
-So the attic has a prerequisite. A radio that loses data to the USB bus won't improve by moving to a better view, and a hot attic and a longer cable could make it worse.
+```
+w /sys/devices/system/cpu/cpu*/cpuidle/state[3-8]/disable - - - - 1
+```
+
+Seven minutes later, the last five-minute window showed zero lost samples, 100% of the expected sample rate, and an `estimated_ppm` of -0.9. The dongle's oscillator was never the problem.
+
+That cleared the way for the attic. A radio that loses data to the USB bus wouldn't have improved with a better view, and the baseline above was measured with the problem in place, so the attic now has to beat numbers from a receiver that was missing about 7% of its samples.
 
 ## Caveats
 
-- **The USB result is one short test.** Five minutes with deep C-states off, on a single morning, is strong evidence but not a long-term measurement. It also doesn't explain the occasional control errors from the dongle (`i2c wr failed=-9`). The kernel log shows no USB resets or disconnects.
+- **The USB result is short-term.** Minutes of clean data on a single morning is strong evidence, not a long-term measurement, and limiting C-states costs some idle power. It also doesn't explain the occasional control errors from the dongle (`i2c wr failed=-9`). The kernel log shows no USB resets or disconnects.
 - **The MLAT link is inferred.** It's what readsb warns about and it fits the logs, but those logs are a snapshot from a quiet morning with few aircraft around. MLAT needs traffic and nearby peers as well as a good clock.
 - **The elevation figures are estimates.** They use a 4/3-earth model and assume an aircraft at 11,000 m.
 - **The DNS fix treats the symptom.** The Tailscale search domain is still in every pod. `tailscale set --accept-dns=false` on the nodes is the real fix, and anything else with a static resolver is exposed until then.
