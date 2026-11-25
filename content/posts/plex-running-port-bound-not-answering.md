@@ -1,6 +1,6 @@
 ---
 title: "Running, Port Bound, Not Answering: When Plex Wedges on Its Own Database"
-date: 2027-01-12
+date: 2026-12-22
 draft: false
 categories: ["kubernetes", "homelab", "debugging"]
 tags: ["plex", "sqlite", "liveness-probes"]

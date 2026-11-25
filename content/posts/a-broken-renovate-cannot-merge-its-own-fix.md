@@ -1,6 +1,6 @@
 ---
 title: "A Broken Renovate Can't Merge Its Own Fix"
-date: 2026-12-29
+date: 2026-12-15
 draft: false
 categories: ["gitops", "kubernetes", "debugging"]
 tags: ["renovate", "cronjob", "automerge"]

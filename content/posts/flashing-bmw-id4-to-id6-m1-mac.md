@@ -1,6 +1,6 @@
 ---
 title: "Flashing a BMW From ID4 to ID6 on an M1 Mac"
-date: 2027-02-09
+date: 2027-01-05
 draft: false
 categories: ["debugging"]
 tags: ["bmw", "e-sys", "parallels", "carplay"]

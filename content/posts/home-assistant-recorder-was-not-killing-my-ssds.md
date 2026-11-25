@@ -1,6 +1,6 @@
 ---
 title: "My Home Assistant Recorder Wasn't Killing My SSDs, Though I Committed That It Was"
-date: 2026-12-15
+date: 2026-12-08
 draft: false
 categories: ["home-automation", "homelab", "debugging"]
 tags: ["home-assistant", "longhorn", "unpoller", "smart"]

@@ -1,6 +1,6 @@
 ---
 title: "The Node Died and Nothing Told Me: Two Outages on a Home K3s Cluster"
-date: 2027-03-09
+date: 2027-01-19
 draft: false
 categories: ["kubernetes", "homelab", "debugging"]
 tags: ["k3s", "longhorn", "flannel", "keepalived"]

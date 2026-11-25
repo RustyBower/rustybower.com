@@ -1,6 +1,6 @@
 ---
 title: "Synced, Healthy, and Never Applied: ArgoCD and EndpointSlices"
-date: 2027-02-23
+date: 2027-01-12
 draft: false
 categories: ["gitops", "kubernetes", "debugging"]
 tags: ["argocd", "traefik", "endpointslice"]

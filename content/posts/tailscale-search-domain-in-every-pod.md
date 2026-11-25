@@ -1,6 +1,6 @@
 ---
 title: "A Tailscale Search Domain in Every Pod, and the One Binary It Broke"
-date: 2027-03-23
+date: 2027-01-26
 draft: false
 categories: ["kubernetes", "networking", "debugging"]
 tags: ["tailscale", "coredns", "resolv-conf", "ads-b"]

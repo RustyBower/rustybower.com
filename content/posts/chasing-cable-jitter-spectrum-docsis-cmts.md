@@ -1,6 +1,6 @@
 ---
 title: "Chasing Cable Jitter: What a Spectrum Ticket Taught Me About DOCSIS and the CMTS"
-date: 2027-01-26
+date: 2026-12-29
 draft: false
 categories: ["networking", "homelab", "debugging", "data"]
 tags: ["spectrum", "docsis", "starlink", "influxdb"]

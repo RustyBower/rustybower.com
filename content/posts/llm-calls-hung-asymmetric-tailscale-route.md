@@ -1,6 +1,6 @@
 ---
 title: "Hung Calls and 40 ms Errors: Two Ways My Local LLM Server Failed"
-date: 2027-04-06
+date: 2027-02-02
 draft: false
 categories: ["llm", "networking", "debugging"]
 tags: ["tailscale", "llama-swap", "llama-cpp", "mac-studio"]
